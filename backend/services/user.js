@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.js";
+import throwCustomError from "../lib/error.js";
 
 class UserService {
   static async createUser({ name, email, password, phone }) {
@@ -10,9 +11,7 @@ class UserService {
     const isUserExist = await User.findOne({ $or: query });
 
     if (isUserExist) {
-      const error = new Error("User already exists");
-      error.statusCode = 409;
-      throw error;
+      throwCustomError("User already exist", 409);
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ name, email, password: hashedPassword, phone });
@@ -27,17 +26,13 @@ class UserService {
 
     const user = await User.findOne({ $or: query });
     if (!user) {
-      const error = new Error("User not found");
-      error.statusCode = 404;
-      throw error;
+      throwCustomError("User not found", 404);
     }
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      const error = new Error("Invalid password");
-      error.statusCode = 401;
-      throw error;
+      throwCustomError("Invalid password", 401);
     }
-    const { password: userPassword, ...restInfo } = user.toJSON();
+    const { password, ...restInfo } = user.toJSON();
     return {
       user: restInfo,
     };

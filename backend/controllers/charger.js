@@ -31,7 +31,11 @@ class ChargerController {
   }
   static async getChargerById(req, res) {
     try {
-      const charger = await ChargerService.getChargerById(req.params.id);
+      const id = req.params.id;
+      if (!id) {
+        return res.status(400).json({ message: "Id is required" });
+      }
+      const charger = await ChargerService.getChargerById(id);
       return res.json(charger);
     } catch (error) {
       const statusCode = error.statusCode || 500;
@@ -49,7 +53,11 @@ class ChargerController {
   }
   static async deleteChargerById(req, res) {
     try {
-      await ChargerService.deleteChargerById(req.params.id);
+      const id = req.params.id;
+      if (!id) {
+        return res.status(400).json({ message: "Id is required" });
+      }
+      await ChargerService.deleteChargerById(id);
       return res.status(204).send();
     } catch (error) {
       const statusCode = error.statusCode || 500;
@@ -59,9 +67,9 @@ class ChargerController {
   static async updateChargerById(req, res) {
     try {
       const { name, location, status, powerOutput, connectorType } = req.body;
-      const changes = { name, location, status, powerOutput, connectorType };
-      const charger = await ChargerService.updateChargerById(req.params.id, changes);
-      return res.status(200).json(charger);
+      const options = { name, location, status, powerOutput, connectorType };
+      const updatedCharger = await ChargerService.updateChargerById(req.params.id, options);
+      return res.status(200).json(updatedCharger);
     } catch (error) {
       if (error.name === "ValidationError") {
         return res.status(400).json({
