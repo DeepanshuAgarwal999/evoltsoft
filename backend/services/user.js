@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.js";
 import throwCustomError from "../lib/error.js";
+import createToken from "../lib/token.js";
 
 class UserService {
   static async createUser({ name, email, password, phone }) {
@@ -32,10 +33,9 @@ class UserService {
     if (!isPasswordMatch) {
       throwCustomError("Invalid password", 401);
     }
-    const { password, ...restInfo } = user.toJSON();
-    return {
-      user: restInfo,
-    };
+    const token = createToken(user._id);
+    const { password: _password, ...restInfo } = user.toJSON();
+    return { user: restInfo, token };
   }
 }
 
