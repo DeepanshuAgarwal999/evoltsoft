@@ -15,17 +15,25 @@
         <span></span>
         <span></span>
       </button>
-
       <!-- Navigation Links -->
       <div class="navbar-menu" :class="{ active: isMobileMenuOpen }">
         <div class="navbar-nav">
           <RouterLink to="/" class="nav-link" @click="closeMobileMenu"> Home </RouterLink>
-          <RouterLink to="/login" class="nav-link" @click="closeMobileMenu"> Login </RouterLink>
-          <RouterLink to="/signup" class="nav-link" @click="closeMobileMenu"> Sign Up </RouterLink>
+
+          <!-- Show Login/Signup if not authenticated -->
+          <template v-if="!isAuthenticated">
+            <RouterLink to="/login" class="nav-link" @click="closeMobileMenu"> Login </RouterLink>
+            <RouterLink to="/signup" class="nav-link" @click="closeMobileMenu"> Sign Up </RouterLink>
+          </template>
+
+          <!-- Show Logout if authenticated -->
+          <template v-else>
+            <button @click="handleLogout" class="nav-link logout-btn">Logout</button>
+          </template>
         </div>
 
-        <!-- Create Station Button -->
-        <div class="navbar-actions">
+        <!-- Create Station Button - Only show if authenticated -->
+        <div class="navbar-actions" v-if="isAuthenticated">
           <RouterLink to="/create-station" class="create-station-btn" @click="closeMobileMenu">
             <span class="btn-icon">+</span>
             Create Station
@@ -38,8 +46,12 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
+import { useAuth } from "@/composables/useAuth";
+import UserService from "@/services/user-service";
 
+const router = useRouter();
+const { isAuthenticated } = useAuth();
 const isMobileMenuOpen = ref(false);
 
 const toggleMobileMenu = () => {
@@ -48,6 +60,16 @@ const toggleMobileMenu = () => {
 
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false;
+};
+
+const handleLogout = async () => {
+  try {
+    await UserService.logout();
+    router.push("/");
+    closeMobileMenu();
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
 };
 </script>
 
@@ -343,5 +365,21 @@ const closeMobileMenu = () => {
 
 .nav-link:hover::after {
   opacity: 1;
+}
+
+/* Logout button styles */
+.logout-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  color:white
+}
+
+.logout-btn:hover {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
 }
 </style>
