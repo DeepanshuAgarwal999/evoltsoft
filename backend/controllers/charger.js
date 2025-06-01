@@ -19,6 +19,7 @@ class ChargerController {
       const charger = await ChargerService.createCharger({ name, location, status, powerOutput, connectorType });
       return res.status(201).json(charger);
     } catch (error) {
+      console.log(error);
       if (error.name === "ValidationError") {
         return res.status(400).json({
           message: "Validation failed",
@@ -44,11 +45,24 @@ class ChargerController {
   }
   static async getAllChargers(req, res) {
     try {
-      const chargers = await ChargerService.getAllChargers();
-      return res.json(chargers);
+      const { status, powerOutput, connectorType, location, sort, name } = req.query;
+      console.log("Filter params received:", { status, powerOutput, connectorType, location, sort, name });
+
+      const chargers = await ChargerService.getAllChargers({ status, powerOutput, connectorType, location, sort, name });
+
+      // Return consistent response format
+      return res.json({
+        success: true,
+        data: chargers,
+        count: chargers.length,
+      });
     } catch (error) {
+      console.error("Error in getAllChargers:", error);
       const statusCode = error.statusCode || 500;
-      return res.status(statusCode).json({ message: error.message });
+      return res.status(statusCode).json({
+        success: false,
+        message: error.message,
+      });
     }
   }
   static async deleteChargerById(req, res) {
