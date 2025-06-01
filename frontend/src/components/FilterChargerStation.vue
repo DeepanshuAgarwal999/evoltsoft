@@ -105,12 +105,14 @@
         </span>
       </div>
     </div>
+    <Button @click='router.push("/map")' class="w-full mt-6"  >Show all station on Map</Button>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import Button from "../components/shared/Button.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -286,7 +288,7 @@ onMounted(() => {
 .filter-container {
   background: white;
   border-radius: 16px;
-  padding: .8rem;
+  padding: 0.8rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
@@ -296,7 +298,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
 }
 
 .filter-title {
