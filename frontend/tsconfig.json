@@ -43,7 +43,7 @@
         "src/**/*.tsx",
         "src/**/*.vue",
         "src/**/*.js"
-    ],
+, "src/components/ChargerStationCard.vue"    ],
     "exclude": [
         "node_modules",
         "dist"
