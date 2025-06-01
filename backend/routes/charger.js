@@ -8,7 +8,7 @@ chargerRouter.post("/", authMiddleware, ChargerController.createCharger);
 
 chargerRouter.get("/:id", authMiddleware, ChargerController.getChargerById);
 
-chargerRouter.get("/", authMiddleware, ChargerController.getAllChargers);
+chargerRouter.get("/", ChargerController.getAllChargers);
 
 chargerRouter.delete("/:id", authMiddleware, ChargerController.deleteChargerById);
 

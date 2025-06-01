@@ -19,9 +19,49 @@ class ChargerService {
     }
     return charger;
   }
+  static async getAllChargers({ status, powerOutput, connectorType, location, sort, name }) {
+    // Build MongoDB query with $and logic (all filters must match)
+    const filters = {};
 
-  static async getAllChargers() {
-    const chargers = await Charger.find();
+    if (status) {
+      filters.status = status;
+    }
+
+    if (powerOutput) {
+      // Convert to number for proper comparison
+      const powerValue = Number(powerOutput);
+      if (!isNaN(powerValue)) {
+        filters.powerOutput = powerValue;
+      }
+    }
+
+    if (connectorType) {
+      filters.connectorType = connectorType;
+    }
+
+    if (location) {
+      filters.location = location;
+    }
+
+    if (name) {
+      // Case-insensitive partial match for name
+      filters.name = { $regex: name, $options: "i" };
+    }
+
+    // Initialize the query builder
+    let chargerQuery = Charger.find(filters);
+
+    // Handle sorting by createdAt
+    if (sort) {
+      const sortValue = sort.toLowerCase();
+      if (sortValue === "newest") {
+        chargerQuery = chargerQuery.sort({ createdAt: -1 });
+      } else if (sortValue === "oldest") {
+        chargerQuery = chargerQuery.sort({ createdAt: 1 });
+      }
+    }
+
+    const chargers = await chargerQuery.exec();
     return chargers;
   }
 
