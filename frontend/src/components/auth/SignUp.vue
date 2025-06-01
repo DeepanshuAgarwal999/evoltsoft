@@ -260,6 +260,7 @@ import { ref, computed } from "vue";
 import AuthHeader from "../../components/shared/AuthHeader.vue";
 import Button from "../../components/shared/Button.vue";
 import UserService from "../../services/user-service";
+import { toast } from "vue-sonner";
 // Form data interface
 interface FormData {
   fullName: string;
@@ -463,9 +464,8 @@ const handleSubmit = async () => {
       [isEmail ? "email" : "phone"]: formData.value.emailOrPhone,
     });
     // Handle successful signup
-    successMessage.value = "Account created successfully! Please check your email for verification.";
+    successMessage.value = "Account created successfully!";
 
-    // Reset form after successful signup
     setTimeout(() => {
       formData.value = {
         fullName: "",
@@ -476,9 +476,11 @@ const handleSubmit = async () => {
       };
       successMessage.value = "";
     }, 3000);
+    toast.success("Account created successfully!");
   } catch (error) {
     generalError.value = "Signup failed. Please try again.";
     console.error("Signup error:", error);
+    toast.error("Signup failed. Please try again.");
   } finally {
     isLoading.value = false;
   }

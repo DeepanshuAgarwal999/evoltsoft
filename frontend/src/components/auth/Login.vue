@@ -124,9 +124,13 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
 import Button from "../../components/shared/Button.vue";
 import AuthHeader from "../../components/shared/AuthHeader.vue";
 import UserService from "../../services/user-service";
+import { toast } from "vue-sonner";
+
+const router = useRouter();
 // Form data interface
 interface FormData {
   emailOrPhone: string;
@@ -226,7 +230,7 @@ const handleSubmit = async () => {
   isLoading.value = true;
 
   try {
-    // Simulate API call
+    // Prepare credentials
     const credentials: any = {
       password: formData.value.password,
     };
@@ -235,13 +239,16 @@ const handleSubmit = async () => {
     } else {
       credentials.phone = formData.value.emailOrPhone;
     }
-    console.log(credentials);
+
+    // Login user - token will be automatically stored by UserService
     const response = await UserService.loginUser(credentials);
-    localStorage.setItem("token", response.token);
     console.log(response);
-    // Handle successful login
-    alert("Login successful!");
+
+    // Redirect to home page after successful login
+    toast.success("Login successful!");
+    router.push("/");
   } catch (error) {
+    toast.error("Login failed. Please check your credentials and try again.");
     generalError.value = "Login failed. Please check your credentials and try again.";
     console.error("Login error:", error);
   } finally {
